@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH --job-name=Chrom3d_genome
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=8G
+#SBATCH --time=00:10:00
+#SBATCH -e /home/users/brian13/SbatchErrOut/Errchrom3d.err
+#SBATCH -o /home/users/brian13/SbatchErrOut/Outchrom3d.out
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=brian13@stanford.edu
+
+$ source activate chrom3d
+cd /home/groups/ashbym/brian/Chrom3D_stuff
+
+# Top 10% regions
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/T10_CPD.100kb_10per_TAD_ovrlp.ids 255,0,0 override > colored_genomes/T10_CPD.100kb_10per_TAD_ovrlp_RED.cmm
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/T10_64PP.100kb_10per_TAD_ovrlp.ids 255,0,0 override > colored_genomes/T10_64PP.100kb_10per_TAD_ovrlp_RED.cmm
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/T10_RankDiff.100kb_10per_TAD_ovrlp.ids 255,0,0 override > colored_genomes/T10_RankDiff.100kb_10per_TAD_ovrlp_RED.cmm
+
+# Bottom 10% regions
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/B10_CPD.100kb_10per_TAD_ovrlp.ids 30,144,255 override > colored_genomes/B10_CPD.100kb_10per_TAD_ovrlp_BLUE.cmm
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/B10_64PP.100kb_10per_TAD_ovrlp.ids 30,144,255 override > colored_genomes/B10_64PP.100kb_10per_TAD_ovrlp_BLUE.cmm
+python color_beads.py colored_genomes/IMR90_inter_intra_chr_w_LADs.diploid.bkg.cmm ids/B10_RankDiff.100kb_10per_TAD_ovrlp.ids 30,144,255 override > colored_genomes/B10_RankDiff.100kb_10per_TAD_ovrlp_BLUE.cmm
+
+# Merged
+python color_beads.py colored_genomes/T10_CPD.100kb_10per_TAD_ovrlp_RED.cmm ids/B10_CPD.100kb_10per_TAD_ovrlp.ids 30,144,255 blend > colored_genomes/T_B_10_CPD.100kb_10per_TAD_ovrlp_MERGED.cmm
+python color_beads.py colored_genomes/T10_64PP.100kb_10per_TAD_ovrlp_RED.cmm ids/B10_64PP.100kb_10per_TAD_ovrlp.ids 30,144,255 blend > colored_genomes/T_B_10_64PP.100kb_10per_TAD_ovrlp_MERGED.cmm
+python color_beads.py colored_genomes/T10_RankDiff.100kb_10per_TAD_ovrlp_RED.cmm ids/B10_RankDiff.100kb_10per_TAD_ovrlp.ids 30,144,255 blend > colored_genomes/T_B_10_RankDiff.100kb_10per_TAD_ovrlp_MERGED.cmm
+
+
+
+
+
+
+
+
