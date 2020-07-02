@@ -1,0 +1,71 @@
+##1 converting HiC-Pro output to BEDPE
+python scripts/conv_hicpro_mat.py 50000/IMR90_50000.matrix 50000/IMR90_50000_abs.bed > IMR90_50000.intermediate.bedpe
+
+python scripts/conv_hicpro_mat.py 1000000/IMR90_1000000.matrix 1000000/IMR90_1000000_abs.bed > IMR90_1000000.intermediate.bedpe
+
+
+##2 Create intra-chromosomal contact matrices
+mkdir intra_chr_RAWobserved
+
+bash scripts/make_intrachr_rawObserved.sh hg19.chrom.sizes.sorted IMR90_50000.intermediate.bedpe
+
+##3 Create inter-chromosomal contact matrices
+mkdir inter_chr_RAWobserved
+
+bash scripts/make_interchr_rawObserved.sh hg19.chrom.sizes.sorted IMR90_1000000.intermediate.bedpe
+
+##4 Aggregation of HiC contact counts for all pairs of TADs
+#4.1 Create BED file specifying the genomic positions of beads, Arrowhead domains (TADs) need to be merged, and gaps between them need to be filled.
+
+bash scripts/arrowhead_to_domains.sh GSE63525_IMR90_Arrowhead_domainlist.txt hg19.chrom.sizes.sorted
+
+#4.2 Concatenate all the domains to use in a later step
+cat *.chr*.domains > IMR90_Arrowhead_domainlist.domains
+
+#4.3 Compute intra-chromosomal interaction counts between TADs
+mkdir intrachr_bedpe
+
+#bash scripts/intrachr_NCHG_input_auto.sh IMR90_Arrowhead_domainlist.domains hg19.chrom.sizes.sorted 50kb
+# had to move the scripts into main folder
+bash intrachr_NCHG_input_auto.sh GSE63525_IMR90_Arrowhead_domainlist hg19.chrom.sizes.sorted 50kb
+
+#4.4 Concatanate all the BEDPE files
+cat intrachr_bedpe/chr*.bedpe > intrachr_bedpe/sample_50kb.domain.RAW.bedpe
+
+#4.5 Remove domains that contain centromeres from the BEDPE file
+curl -s "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/cytoBand.txt.gz" | gunzip -c | grep acen | pairToBed -a intrachr_bedpe/IMR90_50kb.domain.RAW.bedpe -b stdin -type neither > intrachr_bedpe/IMR90_50kb.domain.RAW.no_cen.bedpe
+
+##5 Identification of significant intra-chromosomal interaction
+# 5.1 Calculate the P-valaue and odds ratio for each pair of TADs
+NCHG -m 50000 -p intrachr_bedpe/IMR90_50kb.domain.RAW.no_cen.bedpe > IMR90_50kb.domain.RAW.no_cen.NCHG.out
+
+#5.2 Calculate FDR and filter significant interactions
+python scripts/NCHG_fdr_oddratio_calc.py IMR90_50kb.domain.RAW.no_cen.NCHG.out fdr_bh 2 0.01 > IMR90_50kb.domain.RAW.no_cen.NCHG.sig
+
+#Had to fix this line below from the NCHS_fdr_oddratio_calc.py script:
+    print (line[0] + "\t" + line[1] + "\t" + line[2] + "\t" + line[3] + "\t" + line[4] + "\t" + line[5] + "\t" + line[12])
+
+##6 Create the Model Setup File (GTrack)
+#6.1 Create GTrack using significant interactions
+bash make_gtrack.sh sample_50kb.domain.RAW.no_cen.NCHG.sig sample_Arrowhead_domainlist.domains sample_intra_chromosome.gtrack
+
+#6.2 Add LAD information to the GTrack
+bash scripts/make_gtrack_incl_lad.sh sample_intra_chromosome.gtrack LAD_with_positive_LaminB1_DamID_logratio.bed.bgz sample_intra_chromosome_w_LADs.gtrack
+
+#6.3 Prepare inter-chromosomal Hi-C interaction counts
+bash scripts/interchr_NCHG_input_auto.sh chrom.sizes.sorted unmappable_blacklist.bed 1mb > sample_1mb_inter.bedpe
+
+#6.4 Call significant inter-chromosomal interactions
+NCHG -i -p sample_1mb_inter.bedpe > sample_1mb_inter_chr.NCHG.out
+
+#6.5 Calculate FDR and filter significant interactions
+python scripts/NCHG_fdr_oddratio_calc.py sample_1mb_inter_chr.NCHG.out fdr_bh 2 0.01 > sample_1mb_inter_chr.NCHG.sig
+
+#6.6 Add significant inter-chromosomal interaction information to the GTrack
+bash scripts/add_inter_chrom_beads.sh sample_intra_chromosome_w_LADs.gtrack sample_1mb_inter_chr.NCHG.sig sample_inter_intra_chr_w_LADs.gtrack
+
+#6.7 Modify the Model Setup File to make a diploid model
+python scripts/make_diploid_gtrack.py sample_inter_intra_chr_w_LADs.gtrack > sample_inter_intra_chr_w_LADs.diploid.gtrack
+
+## Run Chrom3D to generate 3D genome models
+Chrom3D -y 0.15 -r 5.0 -n 2000000 -o sample_inter_intra_chr_w_LADs.diploid.cmm sample_inter_intra_chr_w_LADs.diploid.gtrack
