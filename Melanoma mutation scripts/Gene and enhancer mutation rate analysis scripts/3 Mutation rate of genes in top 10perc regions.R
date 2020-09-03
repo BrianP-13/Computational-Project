@@ -3,7 +3,7 @@ library(ggplot2)
 library(IDPmisc)
 
 
-## Description: 
+## Description: This script tests if there are statistically significant differences in mutation rate for genes in top UV susceptible regions
 
 
 out<-"output_directory/"

@@ -6,7 +6,7 @@ library(ggrepel)
 
 out<-"output_directory/"
 
-path<-'D:/Brian/Google Drive/Stanford University/LAB/Computational Project/Publication components/Github scripts/Important datasets/'
+path<-'file_path/'
 
 
 # To load completed datatable

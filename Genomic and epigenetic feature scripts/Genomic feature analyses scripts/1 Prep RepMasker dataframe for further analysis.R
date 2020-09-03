@@ -7,6 +7,23 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 
 out<-"output_directory/"
 
+# To download the additional metadata cols (e.g. "repClass" and "repFamily")
+local_file<-tempfile()
+download.file("http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database
+              /rmsk.txt.gz", local_file)
+COLNAMES <- c("bin", "swScore", "milliDiv", "milliDel", "milliIns",
+              "genoName", "genoStart", "genoEnd", "genoLeft",
+              "strand", "repName", "repClass", "repFamily",
+              "repStart", "repEnd", "repLeft", "id")
+library(GenomicRanges)
+df <- read.table(local_file, col.names=COLNAMES)
+rmsk <- makeGRangesFromDataFrame(df, keep.extra.columns=TRUE,
+                                 seqnames.field="genoName",
+                                 start.field="genoStart",
+                                 end.field="genoEnd",
+                                 strand.field="strand",
+                                 starts.in.df.are.0based=TRUE)
+write.csv(as.data.frame(rmsk), paste0(out, "hg19.database.rmsk.EXTRA.COLS", ".csv", sep=""))
 
 # Import RepeatMasker database of repeat elements
 repM<-file.path("path_to_RepeatMasker_dataset/hg19.database.rmsk.EXTRA.COLS.csv")
