@@ -14,10 +14,129 @@ out<-"output_directory/"
 
 
 # Function for getting TAD coordinate info from CMM files
-load(file = "file_path/TAD_coordinate_extraction_fun.RData")
+chrom_3D<-function(cmm_file) { 
+  Pattern<-"<marker*"
+  param<-c("marker_id","x","y","z","radius","r","g","b","chrID","beadID", "chr","start", "end", "width")
+  Chrom3D_TAD<-as.data.frame(matrix(ncol = 14, nrow = 0))
+  splitter<-c(" ")
+  
+  for (i in 1:nrow(cmm_file)) { 
+    Row_num<-cmm_file[i,]
+    
+    if (grepl(pattern =  Pattern, x = Row_num)) {
+      splt<-unlist(strsplit(x = as.character(Row_num), split = splitter))
+      
+      marker<-splt[2]
+      marker<-unlist(strsplit(x = marker, split = "="))[2]
+      
+      x<-splt[3]
+      x<-as.numeric(unlist(strsplit(x = x,split = "="))[2])
+      
+      y<-splt[4]
+      y<-as.numeric(unlist(strsplit(x = y,split = "="))[2])
+      
+      z<-splt[5]
+      z<-as.numeric(unlist(strsplit(x = z,split = "="))[2])
+      
+      radius<-splt[6]
+      radius<-unlist(strsplit(x = radius,split = "="))[2]
+      
+      r<-splt[7]
+      r<-as.numeric(unlist(strsplit(x = r,split = "="))[2])
+      
+      g<-splt[8]
+      g<-as.numeric(unlist(strsplit(x = g,split = "="))[2])
+      
+      b<-splt[9]
+      b<-as.numeric(unlist(strsplit(x = b,split = "="))[2])
+      
+      chrID<-splt[10]
+      chrID<-unlist(strsplit(x = chrID,split = "="))[2]
+      
+      beadID<-splt[11]
+      beadID<-unlist(strsplit(x = beadID,split = "="))[2]
+      beadID<-unlist(strsplit(x = beadID,split = "/"))[1]
+      
+      chr<-unlist(strsplit(x = beadID, split = ":"))[1]
+      chr<-unlist(strsplit(x = chr, split = "_"))[1]
+      
+      start<-unlist(strsplit(x = beadID, split = ":"))[2]
+      start<-as.numeric(unlist(strsplit(x = start, split = "-"))[1])
+      start<-start+1
+      
+      end<-unlist(strsplit(x = beadID, split = ":"))[2]
+      end<-as.numeric(unlist(strsplit(x = end, split = "-"))[2])
+      
+      width<-end-start+1
+      
+      Row_param<-c(marker,x,y,z,radius,r,g,b,chrID,beadID,chr,start,end,width)
+      Chrom3D_TAD<-rbind.data.frame(Chrom3D_TAD, as.vector(Row_param), stringsAsFactors=F, make.row.names = F)
+      #Chrom3D_TAD<-rbind(Chrom3D_TAD, as.vector(Row_param), stringsAsFactors=F) 
+      
+    } else { 
+      next
+    }
+    
+  }
+  colnames(Chrom3D_TAD)<-param
+  Chrom3D_TAD$x<-as.numeric(Chrom3D_TAD$x)
+  Chrom3D_TAD$y<-as.numeric(Chrom3D_TAD$y)
+  Chrom3D_TAD$z<-as.numeric(Chrom3D_TAD$z)
+  Chrom3D_TAD$r<-as.numeric(Chrom3D_TAD$r)
+  Chrom3D_TAD$g<-as.numeric(Chrom3D_TAD$g)
+  Chrom3D_TAD$b<-as.numeric(Chrom3D_TAD$b)
+  Chrom3D_TAD$start<-as.numeric(Chrom3D_TAD$start)
+  Chrom3D_TAD$end<-as.numeric(Chrom3D_TAD$end)
+  Chrom3D_TAD$width<-as.numeric(Chrom3D_TAD$width)
+  return(Chrom3D_TAD)
+  
+}
+
 
 # Function for getting the distance measurements for TADs of interest
-load(file = "file_path/TAD_dis_from_centr_of_nucleus_fun.RData")
+TAD_radius<-function(cmm_TAD_info) {
+  Top<-cmm_TAD_info[which(cmm_TAD_info$r==1),]
+  Top_r<-Top[,c(2:4)]
+  Top_r$r<-0
+  Bottom<-cmm_TAD_info[which(cmm_TAD_info$b==1),]
+  Bottom_r<-Bottom[,c(2:4)]
+  Bottom_r$r<-0
+  
+  for (i in 1:nrow(Top_r)) {
+    X<-(Top_r[i,1])^2
+    Y<-(Top_r[i,2])^2
+    Z<-(Top_r[i,3])^2
+    R<-(X+Y+Z)^0.5
+    Top_r[i,4]<-R
+  }
+  
+  for (i in 1:nrow(Bottom_r)) {
+    X<-(Bottom_r[i,1])^2
+    Y<-(Bottom_r[i,2])^2
+    Z<-(Bottom_r[i,3])^2
+    R<-(X+Y+Z)^0.5
+    Bottom_r[i,4]<-R
+  }
+  
+  TOP<-as.data.frame(matrix(nrow = nrow(Top_r), ncol = 2))
+  TOP[,1]<-Top_r$r
+  TOP[,2]<-"Top_10"
+  
+  BOTTOM<-as.data.frame(matrix(nrow = nrow(Bottom_r), ncol = 2))
+  BOTTOM[,1]<-Bottom_r$r
+  BOTTOM[,2]<-"Bottom_10"
+  
+  TOP_BOTTOM<-rbind(TOP, BOTTOM)
+  colnames(TOP_BOTTOM)<-c("Distance","TAD_type")
+  TOP_BOTTOM[,2]<-factor(x = TOP_BOTTOM[,2], levels = c('Top_10', 'Bottom_10'))
+  #TOP_BOTTOM<-matrix(ncol = 2)
+  #TOP_BOTTOM[,1]<-Top_r$r
+  #TOP_BOTTOM[,2]<-Bottom_r$r
+  #TOP_BOTTOM<-cbind(Top_r$r, Bottom_r$r)
+  #TOP_BOTTOM<-data.frame(TOP_BOTTOM)
+  #colnames(TOP_BOTTOM)<-c("Top_2SD", "Bottom_2SD")
+  return(TOP_BOTTOM)
+}
 
 
 ######
