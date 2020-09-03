@@ -46,7 +46,7 @@ for (i in 1:5) {
 # Measure total NER
 Enh_XR64$Total_XR64_strand_mean_repair<-rowSums(x = Enh_XR64[,7:11], na.rm = T,dims = 1)
 
-save(Enh_XR64, file = 'D:/Brian/Google Drive/Stanford University/LAB/Computational Project/Genomics Data/XRseq processing/Total XRseq in enhancers/Total_XR64_IMR90_Enh.RData')
+save(Enh_XR64, file = paste0(out,'Total_XR64_IMR90_Enh.RData'))
 
 
 ######
@@ -76,7 +76,7 @@ for (i in 1:6) {
 # Measure total NER
 Enh_XRCPD$Total_XRCPD_strand_mean_repair<-rowSums(x = Enh_XRCPD[,7:12], na.rm = T,dims = 1)
 
-save(Enh_XRCPD, file = 'D:/Brian/Google Drive/Stanford University/LAB/Computational Project/Genomics Data/XRseq processing/Total XRseq in enhancers/Total_XRCPD_IMR90_Enh.RData')
+save(Enh_XRCPD, file =paste0(out, 'Total_XRCPD_IMR90_Enh.RData'))
 
 
 ## END ##
