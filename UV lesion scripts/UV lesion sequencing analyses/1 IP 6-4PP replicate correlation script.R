@@ -3,8 +3,6 @@ library(GenomicRanges)
 library(BSgenome.Hsapiens.UCSC.hg19)
 
 # Description: This script will measure the mean 6-4PP lesion signal for each replicate across the genome to compare Pearson correlation at various bin sizes
-# NOTE: 
-
 
 
 ######
@@ -136,50 +134,4 @@ ggsave(filename = "64PP_rep_corr_plot.NO.LABS.pdf",
 
 
 
-
-
-
-
-
-
-
-
-######
-# CPD files
-out<-'D:/Brian/Google Drive/Important Documents/Stanford University/LAB/Computational Project/DNA Lesion Data/binned_files/BinnedByAverage/CPD_64PP_binned/CPD/Pooled/'
-
-filepath<-file.path('D:/Brian/Google Drive/Important Documents/Stanford University/LAB/Computational Project/DNA Lesion Data/GSE94434_DAK_CPD100vInput.fc.signal.bw')
-binsizes<-c('1000', '5000', '10000', '50000', '100000', '500000', '1000000')
-binsizes<-rev(binsizes)
-binsizes[7]
-
-binNames<-c('1kb','5kb','10kb','50kb','100kb','500kb','1Mb')
-binNames<-rev(binNames)
-binNames[7]
-
-dat <- import.bw(con=filepath, as='RleList')
-dat[dat == 0] <- NA
-
-gen <- BSgenome.Hsapiens.UCSC.hg19
-si.gen <- seqinfo(gen)
-si <- si.gen[names(dat)]
-
-i=7
-print(paste0("working on ", binNames[i]))
-Sys.time()
-num<-as.numeric(binsizes[i])
-bins <- tileGenome(si, tilewidth = num, cut.last.tile.in.chrom = TRUE)
-ba <- binnedAverage(bins,numvar=dat,varname='average', na.rm = TRUE)
-write.csv(as.data.frame(ba), paste0(out, "IPCPD100_pooled_", binNames[i], ".csv", sep=""))
-
-
-for (i in 6:7) {
-  print(paste0("working on ", binNames[i]))
-  num<-as.numeric(binsizes[i])
-  bins <- tileGenome(si, tilewidth = num, cut.last.tile.in.chrom = TRUE)
-  ba <- binnedAverage(bins,numvar=dat,varname='average', na.rm = TRUE)
-  write.csv(as.data.frame(ba), paste0(out, "IPCPD100_pooled_", binNames[i], ".csv", sep=""))
-  
-}
-
-
+### END ###
