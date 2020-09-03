@@ -130,19 +130,6 @@ TT_plot
 ggsave(filename = "TT_freq_Input_vs_IP64PP100.pdf",
        path = out,plot = TT_plot,device = "pdf",width = 1,height = 1.5,units = "in")
 
-# TT plots, NO labels
-TT_plot2<-Gplot_box(df = DiNt_freq,Col_Name = "Group",Y_axis_var_name = "TT",Y_axis_var_col_num = 1,
-                   Group = c("Input","IP_64PP"),Group_label = NULL,
-                   xLab = NULL,yLab = NULL,Margin = 1.125,LEGEND = F)+scale_y_continuous(labels = NULL, minor_breaks = NULL)+
-  theme_bw()+ theme(line = element_line(size = 0.15), 
-                    panel.border = element_rect(fill = NA,size = 0.25),
-                    axis.title.x = element_blank(),
-                    axis.text.x = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.text.y = element_blank())
-TT_plot2
-ggsave(filename = "TT_freq_Input_vs_IP64PP100.NO.LABS.pdf",
-       path = out,plot = TT_plot2,device = "pdf",width = 0.75,height = 1.5,units = "in")
 
 #
 # TC plots, with labels
@@ -160,19 +147,6 @@ TC_plot
 ggsave(filename = "TC_freq_Input_vs_IP64PP100.pdf",
        path = out,plot = TC_plot,device = "pdf",width = 1,height = 1.5,units = "in")
 
-# TC plots, NO labels
-TC_plot2<-Gplot_box(df = DiNt_freq,Col_Name = "Group",Y_axis_var_name = "TC",Y_axis_var_col_num = 2,
-                    Group = c("Input","IP_64PP"),Group_label = NULL,
-                    xLab = NULL,yLab = NULL,Margin = 1.125,LEGEND = F)+scale_y_continuous(labels = NULL, minor_breaks = NULL)+
-  theme_bw()+ theme(line = element_line(size = 0.15), 
-                    panel.border = element_rect(fill = NA,size = 0.25),
-                    axis.title.x = element_blank(),
-                    axis.text.x = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.text.y = element_blank())
-TC_plot2
-ggsave(filename = "TC_freq_Input_vs_IP64PP100.NO.LABS.pdf",
-       path = out,plot = TC_plot2,device = "pdf",width = 0.75,height = 1.5,units = "in")
 
 #
 # CT plots, with labels
@@ -190,19 +164,6 @@ CT_plot
 ggsave(filename = "CT_freq_Input_vs_IP64PP100.pdf",
        path = out,plot = CT_plot,device = "pdf",width = 1,height = 1.5,units = "in")
 
-# CT plots, NO labels
-CT_plot2<-Gplot_box(df = DiNt_freq,Col_Name = "Group",Y_axis_var_name = "CT",Y_axis_var_col_num = 3,
-                    Group = c("Input","IP_64PP"),Group_label = NULL,
-                    xLab = NULL,yLab = NULL,Margin = 1.05,LEGEND = F)+scale_y_continuous(labels = NULL, minor_breaks = NULL)+
-  theme_bw()+ theme(line = element_line(size = 0.15), 
-                    panel.border = element_rect(fill = NA,size = 0.25),
-                    axis.title.x = element_blank(),
-                    axis.text.x = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.text.y = element_blank())
-CT_plot2
-ggsave(filename = "CT_freq_Input_vs_IP64PP100.NO.LABS.pdf",
-       path = out,plot = CT_plot2,device = "pdf",width = 0.75,height = 1.5,units = "in")
 
 #
 # CC plots, with labels
@@ -220,20 +181,6 @@ CC_plot
 ggsave(filename = "CC_freq_Input_vs_IP64PP100.pdf",
        path = out,plot = CC_plot,device = "pdf",width = 1,height = 1.5,units = "in")
 
-# CC plots, NO labels
-CC_plot2<-Gplot_box(df = DiNt_freq,Col_Name = "Group",Y_axis_var_name = "CC",Y_axis_var_col_num = 4,
-                    Group = c("Input","IP_64PP"),Group_label = NULL,
-                    xLab = NULL,yLab = NULL,Margin = 1.2,LEGEND = F)+scale_y_continuous(labels = NULL, minor_breaks = NULL)+
-  theme_bw()+ theme(line = element_line(size = 0.15), 
-                    panel.border = element_rect(fill = NA,size = 0.25),
-                    axis.title.x = element_blank(),
-                    axis.text.x = element_blank(),
-                    axis.title.y = element_blank(),
-                    axis.text.y = element_blank())
-CC_plot2
-ggsave(filename = "CC_freq_Input_vs_IP64PP100.NO.LABS.pdf",
-       path = out,plot = CC_plot2,device = "pdf",width = 0.75,height = 1.5,units = "in")
 
 
-# END
-
+### END ###
