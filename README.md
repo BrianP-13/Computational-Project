@@ -1,7 +1,7 @@
-# UV Lesion Script organization
+# Script Organization
 Date: September 3, 2020
 
-## UV Lesion Script organization
+## UV Lesion Script Organization
 
 Binning UV lesion signal scripts
 1.	UV lesion binning (100kb and 1Mb)
