@@ -90,13 +90,12 @@ Cancer driver gene list scripts
 Whole genome repair analyses scripts
 1.	Binning XR-seq bw to 1Mb bin size
 2.	Merging replicates
-3.	Averaging plus and minus strand
-4.	Master table with all time points 
-5.	Cumulative repair vs UV lesion abundance scatterplot
+3.	Cumulative repair signal for All strnds & Plus Minus strnds
+4.	Total NER in chrom state norm by Di Py freq - boxplot
 
 Chromatin state repair analysis scripts
-1.	Binning XR-seq bw to chromatin state bin size
-2.	Averaging plus and minus strand
+1.	Measure unique XR-seq signals in chromatin states
+2.	Average repair signal from both Plus & Minus strands
 3.	Master table with all time points
 4.	Cumulative repair in chromatin state boxplots
 
@@ -110,4 +109,7 @@ Gene repair analysis scripts
 Enhancer repair analysis scripts
 1.	Measure unique XRseq signal in enhancer regions
 2.	Average plus & minus strand repair signals
-3.	Enhancer repair analysis of top susc. regions
+3.	Enh mutation stats with and without repair for all Enh
+4.	Enh mutation stats with and without repair for all Enh-with ChrX
+5.	MutRate of Enh with and without 64PP or CPD repair in top regions
+6.	Enhancer repair analysis of top susc. regions
